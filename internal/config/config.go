@@ -33,18 +33,22 @@ func ReadConfig() Config {
 	return config
 }
 
-func (c *Config) SetUser(userName string) {
+func (c *Config) SetUser(userName string) error{
 
 	c.CurrentUserName = userName
-	c.write()
+	if err := c.write(); err != nil {
+		return err
+	}
+	return nil
 }
 
-func (c *Config) write() {
+func (c *Config) write() error{
 	data, err := json.Marshal(c)
 	if err != nil {
-		fmt.Println("Error marshaling data")
+		return fmt.Errorf("Error marshaling data")
 	}
 	if err := os.WriteFile(configPath, data, 0777); err != nil{
-		fmt.Println("Error writing to file")
+		return fmt.Errorf("Error writing to file")
 	}
+	return nil
 }
