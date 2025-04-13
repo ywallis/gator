@@ -4,24 +4,32 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ywallis/gator/internal/cli"
 	"github.com/ywallis/gator/internal/config"
 )
 
-func main() {
-	var conf config.Config = config.ReadConfig()
+type State struct {
+	Cfg *config.Config
+}
 
-	state := cli.State{Cfg: &conf}
-	commands := cli.Commands{CommandMap: map[string]func(*cli.State, cli.Command) error{}}
-	commands.Register("login", cli.HandlerLogin)
+func main() {
+	var conf config.Config
+	conf, err := config.ReadConfig()
+	if err != nil {
+		fmt.Printf("Error reading config: %s", err)
+		os.Exit(1)
+	}
+
+	state := State{Cfg: &conf}
+	commands := commands{commandMap: map[string]func(*State, command) error{}}
+	commands.Register("login", HandlerLogin)
 	userArgs := os.Args
 	if len(userArgs) < 2 {
 		fmt.Println("Not enough arguments in call.")
-		return
+		os.Exit(1)
 	}
-	currentCommand := cli.Command{Name: userArgs[1], Args: userArgs[2:]}
+	currentCommand := command{Name: userArgs[1], Args: userArgs[2:]}
 	if err := commands.Run(&state, currentCommand); err != nil {
 		fmt.Println(err)
+		os.Exit(1)
 	}
 }
-
