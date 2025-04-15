@@ -36,6 +36,7 @@ func main() {
 	commands := commands{commandMap: map[string]func(*State, command) error{}}
 	commands.Register("login", HandlerLogin)
 	commands.Register("register", HandlerRegister)
+	commands.Register("reset", HandlerReset)
 	userArgs := os.Args
 	if len(userArgs) < 2 {
 		fmt.Println("Not enough arguments in call.")

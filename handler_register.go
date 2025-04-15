@@ -14,11 +14,6 @@ func HandlerRegister(s *State, cmd command) error {
 		return fmt.Errorf("Register function requires an argument.")
 	}
 
-	// name, err := s.db.GetUser(context.Background(), cmd.Args[0])
-	// if err != nil {
-	// 	return fmt.Errorf("User already exists. Err: %s", err)
-	// }
-
 	user, err := s.db.CreateUser(context.Background(), database.CreateUserParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now(),
