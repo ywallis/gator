@@ -1,17 +1,23 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"os"
 
+	_ "github.com/lib/pq"
 	"github.com/ywallis/gator/internal/config"
+	"github.com/ywallis/gator/internal/database"
 )
 
 type State struct {
-	Cfg *config.Config
+	cfg *config.Config
+	db *database.Queries
 }
 
+
 func main() {
+
 	var conf config.Config
 	conf, err := config.ReadConfig()
 	if err != nil {
@@ -19,9 +25,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	state := State{Cfg: &conf}
+	db, err := sql.Open("postgres", conf.DbUrl)
+	if err != nil {
+		fmt.Printf("Error connecting to db: %s", err)
+		os.Exit(1)
+	}
+	dbQueries := database.New(db)
+
+	state := State{cfg: &conf, db: dbQueries}
 	commands := commands{commandMap: map[string]func(*State, command) error{}}
 	commands.Register("login", HandlerLogin)
+	commands.Register("register", HandlerRegister)
 	userArgs := os.Args
 	if len(userArgs) < 2 {
 		fmt.Println("Not enough arguments in call.")

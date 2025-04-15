@@ -8,7 +8,7 @@ import (
 	"path"
 )
 
-const configPath string = "gatorconfig.json"
+const configPath string = ".gatorconfig.json"
 
 type Config struct {
 	DbUrl           string `json:"db_url"`

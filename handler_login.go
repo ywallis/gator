@@ -1,13 +1,22 @@
 package main
 
-import "fmt"
+import (
+	"context"
+	"fmt"
+)
 
 func HandlerLogin(s *State, cmd command) error {
 	if len(cmd.Args) == 0 {
 		return fmt.Errorf("Login function requires an argument.")
 	}
 
-	if err := s.Cfg.SetUser(cmd.Args[0]); err != nil {
+	user, err := s.db.GetUser(context.Background(), cmd.Args[0]) 
+	if err != nil {
+		return fmt.Errorf("Username does not exist in database!")
+
+	}
+
+	if err := s.cfg.SetUser(user.Name); err != nil {
 		return err
 	}
 
