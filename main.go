@@ -38,6 +38,9 @@ func main() {
 	commands.Register("register", HandlerRegister)
 	commands.Register("reset", HandlerReset)
 	commands.Register("users", HandlerGetUsers)
+	commands.Register("agg", HandlerAgg)
+	commands.Register("addfeed", HandlerAddFeed)
+	commands.Register("feeds", HandlerFeeds)
 	userArgs := os.Args
 	if len(userArgs) < 2 {
 		fmt.Println("Not enough arguments in call.")
