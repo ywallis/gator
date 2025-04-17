@@ -13,7 +13,7 @@ type commands struct {
 	commandMap map[string]func(*State, command) error
 }
 
-func (c commands) Register(name string, f func(*State, command) error) {
+func (c commands) register(name string, f func(*State, command) error) {
 	c.commandMap[name] = f
 }
 

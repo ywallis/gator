@@ -21,12 +21,8 @@ func HandlerFeeds(s *State, cmd command) error {
 	}
 	return nil
 }
-func HandlerAddFeed(s *State, cmd command) error {
+func HandlerAddFeed(s *State, cmd command, user database.User) error {
 
-	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
-	if err != nil {
-		return err
-	}
 	if len(cmd.Args) != 2 {
 		return fmt.Errorf("Add feed should take 2 arguments, name and url")
 	}
@@ -47,7 +43,63 @@ func HandlerAddFeed(s *State, cmd command) error {
 		return err
 	}
 
-	fmt.Printf("Created feed with name: %s and url: %s", record.Name, record.Url)
+	fmt.Printf("Created feed with name: %s and url: %s\n", record.Name, record.Url)
 
+	queryParams := database.CreateFeedFollowParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		UserID:    user.ID,
+		FeedID:    record.ID,
+	}
+	feedFollow, err := s.db.CreateFeedFollow(context.Background(), queryParams)
+
+	fmt.Printf("User %s started following feed %s\n", feedFollow.UserName, feedFollow.FeedName)
+
+	return nil
+}
+
+func HandlerFollowFeed(s *State, cmd command, user database.User) error {
+
+	if len(cmd.Args) != 1 {
+		return fmt.Errorf("Command expects one url argument.")
+	}
+
+	url := cmd.Args[0]
+	feed, err := s.db.GetFeedFromUrl(context.Background(), url)
+	if err != nil {
+		return err
+	}
+
+	queryParams := database.CreateFeedFollowParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		UserID:    user.ID,
+		FeedID:    feed.ID,
+	}
+	feedFollow, err := s.db.CreateFeedFollow(context.Background(), queryParams)
+
+	fmt.Printf("User %s started following feed %s\n", feedFollow.UserName, feedFollow.FeedName)
+	return nil
+}
+
+func HandlerFollowing(s *State, cmd command, user database.User) error {
+
+
+	if len(cmd.Args) != 0 {
+		return fmt.Errorf("Command expects no arguments.")
+	}
+
+	allFollowed, err := s.db.GetFeedFollowForUser(context.Background(), user.ID)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Current user (%s) is following:\n", user.Name)
+
+	for _, row := range allFollowed {
+		fmt.Println(row.FeedName)
+	}
 	return nil
 }

@@ -34,13 +34,15 @@ func main() {
 
 	state := State{cfg: &conf, db: dbQueries}
 	commands := commands{commandMap: map[string]func(*State, command) error{}}
-	commands.Register("login", HandlerLogin)
-	commands.Register("register", HandlerRegister)
-	commands.Register("reset", HandlerReset)
-	commands.Register("users", HandlerGetUsers)
-	commands.Register("agg", HandlerAgg)
-	commands.Register("addfeed", HandlerAddFeed)
-	commands.Register("feeds", HandlerFeeds)
+	commands.register("login", HandlerLogin)
+	commands.register("register", HandlerRegister)
+	commands.register("reset", HandlerReset)
+	commands.register("users", HandlerGetUsers)
+	commands.register("agg", HandlerAgg)
+	commands.register("addfeed", middlewareLoggedIn(HandlerAddFeed))
+	commands.register("feeds", HandlerFeeds)
+	commands.register("follow", middlewareLoggedIn(HandlerFollowFeed))
+	commands.register("following", middlewareLoggedIn(HandlerFollowing))
 	userArgs := os.Args
 	if len(userArgs) < 2 {
 		fmt.Println("Not enough arguments in call.")
