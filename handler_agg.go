@@ -21,10 +21,4 @@ func HandlerAgg(s *State, cmd command) error {
 	for ; ; <- ticker.C {
 		scrapeFeeds(s)
 	}
-	// feed, err := fetchFeed(context.Background(), "https://www.wagslane.dev/index.xml")
-	// if err != nil {
-	// 	return err
-	// }
-	// fmt.Println(feed)
-	// return nil
 }

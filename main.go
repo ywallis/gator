@@ -44,6 +44,7 @@ func main() {
 	commands.register("follow", middlewareLoggedIn(HandlerFollowFeed))
 	commands.register("following", middlewareLoggedIn(HandlerFollowing))
 	commands.register("unfollow", middlewareLoggedIn(HandlerUnfollow))
+	commands.register("browse", middlewareLoggedIn(HandlerBrowse))
 	userArgs := os.Args
 	if len(userArgs) < 2 {
 		fmt.Println("Not enough arguments in call.")
